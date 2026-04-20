@@ -37,9 +37,11 @@ class NotEqual extends Constraint {
     @Override
     boolean propagate() {
         if (x.dom.isFixed()) {
+            // Remove the fixed value of "x" from the "y" domain
             return y.dom.remove(x.dom.min() - offset);
         }
         if (y.dom.isFixed()) {
+            // Remove the fixed value of "y" from the "x" domain
             return x.dom.remove(y.dom.min() + offset);
         }
         return false;

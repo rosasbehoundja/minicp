@@ -91,7 +91,7 @@ public class TinyCSP {
         // pickup a variable that is not yet fixed if any
         Optional<Variable> notFixed = firstNotFixed();
         //Optional<Variable> notFixed = smallestNotFixed();
-        if (!notFixed.isPresent()) { // all variables fixed, a solution is found
+        if (notFixed.isEmpty()) { // all variables fixed, a solution is found
             int[] solution = variables.stream().mapToInt(x -> x.dom.min()).toArray();
             onSolution.accept(solution);
         } else {

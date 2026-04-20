@@ -43,7 +43,7 @@ public class GraphColoringTinyCSP {
          *
          * @param n the number of nodes with indices on {0,...,n-1}
          * @param edges a list of edges, an edge (a,b) encoded in a size two array [a,b]
-         * @param maxColor, the maximum number of colors allowed in the solution, the allowed colors are {0...maxColor-1}
+         * @param maxColor the maximum number of colors allowed in the solution, the allowed colors are {0...maxColor-1}
          */
         public GraphColoringInstance(int n, List<int []> edges, int maxColor) {
             this.n = n;
@@ -117,11 +117,41 @@ public class GraphColoringTinyCSP {
      *         or null if the problem is unfeasible
      */
     public static int[] solve(GraphColoringTinyCSP.GraphColoringInstance instance) {
-        // TODO: solve the graph coloring problem using TinyCSP and return a solution
         // Hint: you can stop the search on first solution throwing and catching an exception
         //       in the onSolution closure or you can modify the dfs search
-         throw new NotImplementedException("GraphColoringTinyCSP");
+        int n = instance.n;
+        List<int []> edges = instance.edges;
+        int nCol = instance.maxColor;
+        TinyCSP csp = new TinyCSP();
+
+        // Variables and domains
+        // Represents vertices and domains represents possibles colors
+        Variable[] vars = new Variable[n];
+        for (int i = 0; i < n; i++) {
+            vars[i] = csp.makeVariable(nCol);
+        }
+
+        // Constraints
+        // Adjacents vertices should not get the same colors
+        for (int[] edge : edges) {
+            int source = edge[0];
+            int dest = edge[1];
+            csp.notEqual(vars[source], vars[dest], 0);
+        }
+
+        // Collect the solutions
+        ArrayList<int []> solutions = new ArrayList<>();
+
+        try {
+            csp.dfs(solution -> {
+                solutions.add(solution); // Get the first solution
+                throw new FirstSolution(); // Stop the search after the first solution is found
+            });
+        } catch (FirstSolution ignored) {}
+
+        return solutions.getFirst();
     }
 
+    static class FirstSolution extends RuntimeException {}
 
 }
